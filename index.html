@@ -112,9 +112,33 @@
     color:#eaf1ff;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;z-index:80;opacity:0;transition:.25s;pointer-events:none}
   .toast.on{opacity:1}
   @media(max-width:820px){
+    html{overflow-x:hidden}
+    body{overflow-y:auto;overflow-x:hidden}
+    .wrap{height:auto;min-height:100dvh}
+    main{flex:none;padding:0 8px 2px}
     .history{display:none}
-    .logo{font-size:24px}
-    .play{width:104px;height:70px;font-size:18px}
+    .logo{font-size:23px}
+    .board-col{height:auto;align-items:flex-start;padding-top:4px}
+    .lines{width:50px}
+    .lines .lab{font-size:9px}
+    .lnbtns{padding:4px;gap:3px}
+    .ln{width:38px;height:21px;font-size:12px}
+    footer{flex-direction:column;gap:8px;padding:8px 12px calc(16px + env(safe-area-inset-bottom));align-items:stretch}
+    footer>*{width:100%!important}
+    footer>:nth-child(1){order:1}
+    footer>:nth-child(2){order:2}
+    footer>:nth-child(3){order:4}
+    footer>:nth-child(4){order:3}
+    #riskSeg,#modeSeg{width:100%}
+    #riskSeg button,#modeSeg button{flex:1}
+    .betinput{flex:1}
+    .betrow{flex-wrap:nowrap;gap:8px}
+    .minibtn{padding:0 12px}
+    .playwrap{margin-top:2px}
+    .play{width:100%;height:58px;font-size:20px;box-shadow:0 5px 0 #b85e00,0 8px 16px rgba(0,0,0,.4)}
+    .play:active{box-shadow:0 2px 0 #b85e00}
+    .play small{display:inline;margin-left:8px}
+    .card.bal{align-items:center;text-align:center;padding:8px 14px}
   }
 </style>
 </head>
@@ -249,9 +273,10 @@ let W=600, H=560, DPR=1;
 function resize(){
   const col=cv.closest('.board-col');
   const availW=Math.max(260,(col.clientWidth||600)-4);
-  const availH=Math.max(260,(col.clientHeight||520)-14);
+  const availH=Math.max(200,(col.clientHeight||520)-14);
   const aspect=600/560;
-  let cssW=Math.min(600, availW, availH*aspect);
+  const mobile=window.innerWidth<=820;
+  let cssW = mobile ? Math.min(520, availW) : Math.min(600, availW, availH*aspect);
   const cssH=cssW/aspect;
   DPR = Math.min(2, window.devicePixelRatio||1);
   cv.style.width=cssW+'px'; cv.style.height=cssH+'px';
@@ -307,9 +332,12 @@ function drawBoard(){
     grad.addColorStop(0,shade(col,1.18)); grad.addColorStop(1,shade(col,0.82));
     ctx.fillStyle=grad; ctx.shadowColor=col; ctx.shadowBlur=fl*16; ctx.fill(); ctx.shadowBlur=0;
     ctx.fillStyle='rgba(0,0,0,.72)';
-    let fs=Math.max(8,Math.min(13,bw*0.34)); ctx.font='800 '+fs+'px Segoe UI,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    const lbl=(tbl[k]>=100?Math.round(tbl[k]):tbl[k])+'×';
+    const mv=tbl[k];
+    const lbl=(mv>=1000?(mv/1000)+'k':(mv>=100?Math.round(mv):mv))+'×';
+    let fs=Math.min(13,bw*0.44);
+    ctx.font='800 '+fs+'px Segoe UI,sans-serif';
+    while(fs>5 && ctx.measureText(lbl).width>bw*0.9){ fs-=0.5; ctx.font='800 '+fs+'px Segoe UI,sans-serif'; }
     ctx.fillText(lbl,cxk,y+bh/2+0.5);
     ctx.restore();
     if(bucketFlash[k]) bucketFlash[k]=Math.max(0,bucketFlash[k]-0.045);
