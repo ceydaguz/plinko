@@ -213,6 +213,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<audio id="bgm" src="/bg.mp3" loop preload="auto"></audio>
 
 <script>
 "use strict";
@@ -398,6 +399,12 @@ function winSound(m){ if(!S.sound) return; const ac=audio(); if(!ac) return;
   notes.forEach((f,i)=>{ const o=ac.createOscillator(),g=ac.createGain(); o.type='sine'; o.frequency.value=f;
     o.connect(g); g.connect(ac.destination); const t=t0+i*0.07; g.gain.setValueAtTime(0.0001,t);
     g.gain.exponentialRampToValueAtTime(0.09,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.28); o.start(t); o.stop(t+0.3); }); }
+// background music (future-garage loop)
+const BGM = document.getElementById('bgm');
+BGM.volume = 0.32;
+function bgmTry(){ if(S.sound && BGM.paused){ const p=BGM.play(); if(p&&p.catch) p.catch(()=>{}); } }
+document.addEventListener('pointerdown', bgmTry, true);
+
 
 /* ---------- UI ---------- */
 function syncBalance(){ document.getElementById('balVal').textContent=fmt(S.balance); }
@@ -454,7 +461,7 @@ document.getElementById('dblBtn').onclick=()=>setBet(parseBet()*2);
 document.getElementById('minBtn').onclick=()=>setBet(S.cfg.betMin);
 document.getElementById('maxBtn').onclick=()=>setBet(S.cfg.betMax);
 document.getElementById('betInput').onblur=()=>setBet(parseBet());
-document.getElementById('soundBtn').onclick=()=>{ S.sound=!S.sound; document.getElementById('soundBtn').style.opacity=S.sound?1:0.45; if(S.sound)audio(); };
+document.getElementById('soundBtn').onclick=()=>{ S.sound=!S.sound; document.getElementById('soundBtn').style.opacity=S.sound?1:0.45; if(S.sound){ audio(); bgmTry(); } else { BGM.pause(); } };
 function openFair(){ document.getElementById('fvHash').textContent=S.seeds.hash; document.getElementById('fvClient').textContent=S.seeds.client; document.getElementById('fvNonce').textContent=S.seeds.nonce; document.getElementById('revealOut').innerHTML=''; document.getElementById('fairModal').classList.add('on'); }
 document.getElementById('fairBtn').onclick=openFair;
 document.getElementById('fairLink').onclick=openFair;
