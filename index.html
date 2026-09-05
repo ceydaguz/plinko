@@ -432,6 +432,9 @@ const BGM = document.getElementById('bgm');
 BGM.volume = 0.32;
 function bgmTry(){ if(S.sound && BGM.paused){ const p=BGM.play(); if(p&&p.catch) p.catch(()=>{}); } }
 document.addEventListener('pointerdown', bgmTry, true);
+document.addEventListener('touchstart', bgmTry, true);
+document.addEventListener('keydown', bgmTry, true);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) bgmTry(); });
 
 
 /* ---------- UI ---------- */
